@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register | JogjaHotels</title>
+    <title>Register | JakartaHotels</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -81,7 +81,7 @@
 <body>
     <div class="container">
         <div class="image-section">
-            <img src="{{ asset('images/hotel-room.jpg') }}" alt="Hotel Room">
+            <img src="{{ asset('images/hotel.jpg') }}" alt="Hotel Room">
         </div>
         <div class="form-section">
             <h2>Let's Set Up</h2>

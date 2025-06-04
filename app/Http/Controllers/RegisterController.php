@@ -17,6 +17,7 @@ class RegisterController extends Controller
             'birthdate' => 'required|date',
         ]);
 
+        #<img src="{{ asset('images/hotel.jpg') }}" alt="Hotel Room">
         // Simulasi penyimpanan
         // User::create([...]);
 
