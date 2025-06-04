@@ -83,6 +83,28 @@ class HotelController extends Controller
         // ];
         $response = Http::get('http://127.0.0.1:7000/ratingBased');
         $hotels = $response->json();
+        // dd($hotels);
         return view('home', compact('hotels'));
     }
+
+    public function show($id)
+    {
+        $response = Http::get('http://127.0.0.1:7000/core/hotel-info/' . $id);
+        $data = $response->json();
+
+        $hotel = (object) $data['hotel'];
+
+        // Ambil hotel mirip berdasarkan nama
+        $response_content_based = Http::get('http://127.0.0.1:7000/contentBased/', [
+            'hotel_name' => $hotel->hotel_name,
+            'top_n' => 3
+        ]);
+
+        $recommendations = $response_content_based->json()['recommendations'] ?? [];
+        // dd($recommendations);
+        return view('hotel_details', compact('hotel', 'recommendations'));
+    }
+
+
+
 }
