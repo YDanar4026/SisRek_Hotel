@@ -32,6 +32,7 @@
                     <a href="{{ url('/favorites') . '?user_name=' . urlencode(Auth::user()->name) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                         Favorites
                     </a>
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
@@ -67,21 +68,7 @@
        class="px-3 py-1 rounded transition 
        {{ request()->routeIs('hotels.all') ? 'bg-blue-600 text-white' : 'hover:bg-blue-100' }}">
         All Hotels
-    </a> 
- @auth
-    <a href="{{ route('hotels.collaborative', ['username' => Auth::user()->name]) }}"
-       class="px-3 py-1 rounded transition 
-       {{ request()->routeIs('hotels.collaborative') ? 'bg-blue-600 text-white' : 'hover:bg-blue-100' }}">
-       Rekomendasi Mirip Anda
     </a>
-@else
-    <a href="{{ route('login-view') }}"
-       class="px-3 py-1 rounded transition hover:bg-blue-100">
-       Rekomendasi Mirip Anda
-    </a>
-@endauth
-
-
 </div>
 
     </div>
@@ -118,27 +105,85 @@
                         </div>
                     </div>
 
-   
-
-<form action="{{ route('add.favorite') }}" method="GET" class="absolute top-4 right-4">
-     @auth
-    <input type="hidden" name="user_name" value="{{  auth()->user()->name }}">
-    <input type="hidden" name="hotel_name" value="{{ $hotel['hotel_name'] }}">
-    @endauth
-    <button type="submit"
-            class="bg-white border border-gray-300 rounded-full p-2 hover:bg-red-100 hover:border-red-300 transition">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-             stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500 hover:text-red-500">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M11.48 3.499a5.5 5.5 0 017.78 0c2.137 2.138 2.137 5.606 0 7.744L12 18.5l-7.26-7.257a5.5 5.5 0 017.74-7.744z"/>
-        </svg>
-    </button>
-</form>
-
+                    <form action="{{ route('add.favorite') }}" method="GET" class="absolute top-4 right-4">
+                        @auth
+                        <input type="hidden" name="user_name" value="{{ auth()->user()->name }}">
+                        <input type="hidden" name="hotel_name" value="{{ $hotel['hotel_name'] }}">
+                        @endauth
+                        <button type="submit"
+                                class="bg-white border border-gray-300 rounded-full p-2 hover:bg-red-100 hover:border-red-300 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                 stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500 hover:text-red-500">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M11.48 3.499a5.5 5.5 0 017.78 0c2.137 2.138 2.137 5.606 0 7.744L12 18.5l-7.26-7.257a5.5 5.5 0 017.74-7.744z"/>
+                            </svg>
+                        </button>
+                    </form>
                 </a>
             @endforeach
         </div>
     </main>
+@php
+    $currentPage = $hotels->currentPage();
+    $lastPage = $hotels->lastPage();
+    $start = max(1, $currentPage - 1);
+    $end = min($lastPage, $currentPage + 1);
+@endphp
+
+<div class="mt-6 flex justify-center space-x-2">
+    {{-- Previous Page --}}
+    @if (!$hotels->onFirstPage())
+        <a href="{{ $hotels->previousPageUrl() }}"
+           class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-100">
+            &laquo; Prev
+        </a>
+    @endif
+
+    {{-- Page 1 --}}
+    <a href="{{ $hotels->url(1) }}"
+       class="px-4 py-2 border rounded {{ $currentPage == 1 ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
+        1
+    </a>
+
+    {{-- Left Ellipsis --}}
+    @if ($start > 2)
+        <span class="px-2 py-2 text-gray-500">...</span>
+    @endif
+
+    {{-- Page Numbers Around Current --}}
+    @for ($i = $start; $i <= $end; $i++)
+        @if ($i != 1 && $i != $lastPage)
+            <a href="{{ $hotels->url($i) }}"
+               class="px-4 py-2 border rounded {{ $currentPage == $i ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
+                {{ $i }}
+            </a>
+        @endif
+    @endfor
+
+    {{-- Right Ellipsis --}}
+    @if ($end < $lastPage - 1)
+        <span class="px-2 py-2 text-gray-500">...</span>
+    @endif
+
+    {{-- Last Page --}}
+    @if ($lastPage > 1)
+        <a href="{{ $hotels->url($lastPage) }}"
+           class="px-4 py-2 border rounded {{ $currentPage == $lastPage ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
+            {{ $lastPage }}
+        </a>
+    @endif
+
+    {{-- Next Page --}}
+    @if ($hotels->hasMorePages())
+        <a href="{{ $hotels->nextPageUrl() }}"
+           class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-100">
+            Next &raquo;
+        </a>
+    @endif
+</div>
+
+
+    
 
     <!-- Script toggle dropdown -->
     <script>

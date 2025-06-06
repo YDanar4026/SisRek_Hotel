@@ -72,9 +72,30 @@
             color: white;
         }
 
-        .brand {
-            color: #00B0FF;
-            font-weight: bold;
+        .alert {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 20px;
         }
     </style>
 </head>
@@ -85,14 +106,43 @@
         </div>
         <div class="form-section">
             <h2>Let's Set Up</h2>
+
+            {{-- Alert Message --}}
+            @if ($errors->any())
+                <div class="alert alert-error">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-error">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if (session('warning'))
+                <div class="alert alert-warning">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
+            {{-- Form --}}
             <form method="POST" action="{{ route('register') }}">
                 @csrf
-                <input type="text" name="username" placeholder="Username" required>
-                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="name" placeholder="Fullname" value="{{ old('name') }}" required>
+                <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
                 <input type="password" name="password" placeholder="New password" required>
-                <input type="text" name="fullname" placeholder="Fullname" required>
-                <input type="date" name="birthdate" placeholder="Birth date" required>
-                
+
                 <div class="button-group">
                     <button type="reset" class="cancel-btn">Cancel</button>
                     <button type="submit" class="signup-btn">Sign Up</button>
